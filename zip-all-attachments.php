@@ -172,6 +172,8 @@ class Zip_All_Post_Attachments
  */
     public function build_zip($all_file_paths){
 
+        ini_set('max_execution_time', 0);
+
         $zip_path = $this->zip_locale;//location of zip on server. set in construct
 
         $files_to_zip = $all_file_paths;
@@ -187,6 +189,7 @@ class Zip_All_Post_Attachments
             foreach ($files_to_zip as $file) {
                     $short_name = basename($file);
                     $zip->addFile($file,$short_name);
+                    echo "Now adding $short_name";
 
             }//end foreach
             $zip->close();
@@ -209,6 +212,8 @@ class Zip_All_Post_Attachments
  * @todo    add check for valid filetype?
  */
     public function delete_from_zip($postid){
+
+        ini_set('max_execution_time', 0);
 
         $zip_path = $this->zip_locale;//location of zip on server. set in construct
 
@@ -300,6 +305,8 @@ class Zip_All_Post_Attachments
  * @todo    rebuild this and combine with "build zip" to remove redundancy.
  */
     public function un_trash_post($postid){
+
+        ini_set('max_execution_time', 0);
 
         $zip_path = $this->zip_locale;//location of zip on server. set in construct
 

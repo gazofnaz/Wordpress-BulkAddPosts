@@ -77,6 +77,11 @@ class Add_Posts_From_Zip extends Zip_All_Post_Attachments
 
         if(isset($_FILES['fupload'])) {
 
+            if($_FILES['fupload']['size'] > 1024 * 1024 * 120){
+                $nice_size = round($_FILES['fupload']['size']/1024/1024, 2);
+                die("Your zip file is too big. The maximum filesize is 120Mb. (Your zip file is {$nice_size} Mb)");
+            }
+
             $filename       = $_FILES['fupload']['name'];
             $source         = $_FILES['fupload']['tmp_name'];
             $type           = $_FILES['fupload']['type'];
@@ -169,6 +174,15 @@ class Add_Posts_From_Zip extends Zip_All_Post_Attachments
                 </td>
                 <td>
                     <input type="submit" value="Upload Zip File" class="button-primary"/>
+                </td>
+                <td>
+                    <div class="file-warning">
+                        <?php
+                        if(isset($file_warning)){
+                            echo $file_warning;
+                        }
+                        ?>
+                    </div>
                 </td>
             </form>
         </tr>
