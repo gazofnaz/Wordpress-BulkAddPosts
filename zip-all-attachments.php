@@ -60,7 +60,7 @@ class Zip_All_Post_Attachments
  */
     public function download_all_link(){
 
-        $hyperlink = "<h1><a href='%s'>Download All %s's</a></h1>";
+        $hyperlink = "<h1><a href='%s'>Download All %s</a></h1>";
         $title_plural = ucwords( $this->post_type_name ) . '\'s';
         echo sprintf( $hyperlink, $this->zip_download_link,  $title_plural) ;
     }
