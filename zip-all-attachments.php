@@ -48,52 +48,24 @@ class Zip_All_Post_Attachments
 
             $post_type_name = $this->post_type_name;
             $parent_page      = 'edit.php?post_type='.$post_type_name;
-            $page_title       = 'Current Attachments';
+            $page_title       = 'Download All';
             $page_slug        = strtolower( str_replace( ' ', '_', $page_title  ) );
 
-            add_submenu_page(  $parent_page, $page_title, $page_title, 'manage_options', $page_slug,  array( &$this,'current_files') );
+            add_submenu_page(  $parent_page, $page_title, $page_title, 'manage_options', $page_slug,  array( &$this,'download_all_link') );
     }//end add_new_admin_page
 
 
 /**
- * @todo DELETE THIS ON LIVE
+ * Link for "Download All" page in WP-Admin
  */
-    public function current_files(){
+    public function download_all_link(){
 
-        $post_type_name = $this->post_type_name;
-
-        $presentations = get_posts( array(//get all posts of correct type
-            'post_type'      => $post_type_name,
-            'posts_per_page' => -1,
-            'post_status'    => 'publish'
-        ) );
-
-        if($presentations){
-
-            foreach($presentations as $presentation){//Get ID of every presentation post
-                 $pres_ids[] = $presentation->ID;
-            }
-
-            foreach($pres_ids as $pres_id){//Use ID of parent post to get each attachment
-                $attachment = get_posts( array(
-                    'post_type'      => 'attachment',
-                    'posts_per_page' => -1,
-                    'post_parent'    => $pres_id,
-                ) );
-
-                $parent_status = get_post_status($attachment[0]->post_parent);//child status is always inherit, need parent status.
-                if($parent_status === 'publish'){//make sure post is no trash, pending, draft, private etc.
-
-                    $file_path = get_attached_file($attachment[0]->ID);//ZipArchive needs file paths, not urls
-                    echo $file_path.'<br/>';//REMOVE FOR LIVE
-
-                }//endif
-
-            }
-
-        }
+        $hyperlink = "<h1><a href='%s'>Download All %s's</a></h1>";
+        $title_plural = ucwords( $this->post_type_name ) . '\'s';
+        echo sprintf( $hyperlink, $this->zip_download_link,  $title_plural) ;
     }
 
+    
 /**
  * Generates a list of all the files attached to the posts of the given type in the database
  *
