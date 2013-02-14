@@ -52,7 +52,7 @@ class Add_Post_Upload_Box extends Zip_All_Post_Attachments {
       $post_type_name = $this->post_type_name;
 
       $filename=$_FILES['wp_presentation_file']['name'];
-      $wp_upload_dir = wp_upload_dir();
+      $wp_upload_dir = ABSPATH.trailingslashit(get_option('upload_path'));
       global $post;
 
       if ( is_int( wp_is_post_revision( $id ) ) )

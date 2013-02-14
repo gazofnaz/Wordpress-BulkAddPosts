@@ -23,12 +23,10 @@ class Zip_All_Post_Attachments
     public function __construct( $parent ){
 
         $this->post_type_name = strtolower( str_replace( ' ', '_', $parent ) );
-        $upload_dir = wp_upload_dir();
-        $this->zip_locale = $upload_dir['basedir'].'/'.'all_'.$this->post_type_name.'s.zip';//where the zip is stored
-        $this->zip_download_link = $upload_dir['baseurl'].'/'.'all_'.$this->post_type_name.'s.zip';//Zip location to pass to frontend
+        $this->zip_locale = ABSPATH.trailingslashit(get_option('upload_path')).'all_'.$this->post_type_name.'s.zip';//where the zip is stored
+        $this->zip_download_link = trailingslashit(get_site_url()).trailingslashit(get_option('upload_path')).'all_'.$this->post_type_name.'s.zip';//Zip location to pass to frontend
 
-        add_action( 'admin_menu', array( &$this, 'add_new_admin_page' ) );
-
+        add_action('admin_menu', array( &$this, 'add_new_admin_page' ) );
         add_action('wp_trash_post', array(&$this, 'delete_from_zip'));//for wordpress v3.3 onwards
         add_action('trash_post', array(&$this, 'delete_from_zip'));//added for backwards compatibility
         add_action('admin_init', array(&$this, 'remove_last_file'));//delete_from_zip can't delete the last file from the zip, this can.
@@ -84,7 +82,7 @@ class Zip_All_Post_Attachments
                 ) );
 
                 $parent_status = get_post_status($attachment[0]->post_parent);//child status is always inherit, need parent status.
-                if($parent_status == 'publish'){//make sure post is no trash, pending, draft, private etc.
+                if($parent_status === 'publish'){//make sure post is no trash, pending, draft, private etc.
 
                     $file_path = get_attached_file($attachment[0]->ID);//ZipArchive needs file paths, not urls
                     echo $file_path.'<br/>';//REMOVE FOR LIVE
@@ -134,7 +132,7 @@ class Zip_All_Post_Attachments
                 ) );
 
                 $parent_status = get_post_status($attachment[0]->post_parent);//child status is always inherit, need parent status.
-                if($parent_status == 'publish'){//make sure post is no trash, pending, draft, private etc.
+                if($parent_status === 'publish'){//make sure post is no trash, pending, draft, private etc.
 
                     $file_path = get_attached_file($attachment[0]->ID);//ZipArchive needs file paths, not urls
 
@@ -189,8 +187,6 @@ class Zip_All_Post_Attachments
             foreach ($files_to_zip as $file) {
                     $short_name = basename($file);
                     $zip->addFile($file,$short_name);
-                    echo "Now adding $short_name";
-
             }//end foreach
             $zip->close();
         }//endif
@@ -223,6 +219,11 @@ class Zip_All_Post_Attachments
             'post_parent'    => $postid,
         ) );
 
+        $all_presentations = get_posts(array(
+            'post_type'   => 'presentation',
+            'post_status' => 'publish'
+            ));
+
         if ( $attachments ) {
             foreach ( $attachments as $attachment ) {
 
@@ -234,7 +235,7 @@ class Zip_All_Post_Attachments
 
             }//end foreach
 
-            if(!empty($all_file_paths)){//do not call function if array is empty
+            if( count($all_presentations) > 1 ){//if the entry isn't the last in the zip
                 $zip = new ZipArchive;
                 $opened = $zip->open($zip_path);
 
@@ -249,7 +250,10 @@ class Zip_All_Post_Attachments
 
                 }//end foreach
                 $zip->close();
-            }
+            } elseif (is_file($zip_path)) {
+                //we don't need to remove the last pdf, we can just delete the entire zip
+                unset($zip_path);
+            }//endif
 
         }//endif
         else{

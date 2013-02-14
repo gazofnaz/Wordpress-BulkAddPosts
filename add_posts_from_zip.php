@@ -86,7 +86,7 @@ class Add_Posts_From_Zip extends Zip_All_Post_Attachments
             $source         = $_FILES['fupload']['tmp_name'];
             $type           = $_FILES['fupload']['type'];
             $name           = explode('.', $filename);
-            $wp_upload_dir     = wp_upload_dir();
+            $wp_upload_dir  = wp_upload_dir();
             $target         = $wp_upload_dir['path'].'/' . $name[0] . '-' . time() . '/';//dir to copy temp files into
             $accepted_types = array('application/zip', 'application/x-zip-compressed', 'multipart/x-zip', 'application/s-compressed');
 
